@@ -5,7 +5,6 @@ from ..controllers import OrderController
 
 order = Blueprint('order', __name__)
 
-
 @order.route('/', methods=POST)
 def create_order():
     order, error = OrderController.create(request.json)
