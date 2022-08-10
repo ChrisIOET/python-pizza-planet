@@ -1,7 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..common.utils import check_required_keys
-from ..repositories.managers import (BeverageManager, ItemManager, OrderManager,
+from ..repositories.managers import (ItemManager, OrderManager,
                                      SizeManager)
 from .base import BaseController
 
@@ -12,8 +12,8 @@ class OrderController(BaseController):
                        'client_address', 'client_phone', 'size_id')
 
     @staticmethod
-    def calculate_order_price(size_price: float, ingredients: list):
-        price = sum(ingredient.price for ingredient in ingredients)
+    def calculate_order_price(size_price: float, items: list):
+        price = sum(item.price for item in items)
         return round(price, 2)
 
     @classmethod
@@ -30,16 +30,14 @@ class OrderController(BaseController):
 
         print('entramos')  # ACA HAY QUE TRABAJAR ACERCA DE LAS BEVERAGES,
 
-        ingredient_ids = current_order.pop('ingredients', [])
-        # beverage_ids = current_order.pop('beverages', []) #
+        item_ids = current_order.pop('items', [])
         try:
 
-            ingredients = ItemManager.get_by_id_list(ingredient_ids)
-            # beverages = BeverageManager.get_by_id_list(beverage_ids) #
+            items = ItemManager.get_by_id_list(item_ids)
 
-            price = cls.calculate_order_price(size.get('price'), ingredients)
+            price = cls.calculate_order_price(size.get('price'), items)
 
             order_with_price = {**current_order, 'total_price': price}
-            return cls.manager.create(order_with_price, ingredients), None
+            return cls.manager.create(order_with_price, items), None
         except (SQLAlchemyError, RuntimeError) as ex:
             return None, str(ex)
