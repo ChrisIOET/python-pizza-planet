@@ -2,5 +2,5 @@ from ..repositories.managers import IngredientManager
 from .base import BaseController
 
 
-class ItemController(BaseController):
+class IngredientController(BaseController):
     manager = IngredientManager

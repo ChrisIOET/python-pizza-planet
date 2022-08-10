@@ -1,7 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..common.utils import check_required_keys
-from ..repositories.managers import (BeverageManager, ItemManager, OrderManager,
+from ..repositories.managers import (BeverageManager, IngredientManager, OrderManager,
                                      SizeManager)
 from .base import BaseController
 
@@ -34,7 +34,7 @@ class OrderController(BaseController):
         # beverage_ids = current_order.pop('beverages', []) #
         try:
 
-            ingredients = ItemManager.get_by_id_list(ingredient_ids)
+            ingredients = IngredientManager.get_by_id_list(ingredient_ids)
             # beverages = BeverageManager.get_by_id_list(beverage_ids) #
 
             price = cls.calculate_order_price(size.get('price'), ingredients)

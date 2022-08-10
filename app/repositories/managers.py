@@ -53,9 +53,9 @@ class BeverageManager(BaseManager):
         return cls.session.query(cls.model).filter(cls.model._id.in_(set(ids))).all() or []
 
 
-class ItemManager(BaseManager):
+class IngredientManager(BaseManager):
     model = Ingredient
-    serializer = SizeSerializer
+    serializer = IngredientSerializer ## esto l oapsa a ala tabla de ingredinet
 
     @classmethod
     def get_by_id_list(cls, ids: Sequence):
