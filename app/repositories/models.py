@@ -13,7 +13,6 @@ class Order(db.Model):
     total_price = db.Column(db.Float)
     size_id = db.Column(db.Integer, db.ForeignKey('size._id'))
     
-
     size = db.relationship('Size', backref=db.backref('size'))
     detail = db.relationship('OrderDetail', backref=db.backref('order_detail'))
 

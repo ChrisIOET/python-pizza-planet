@@ -55,7 +55,7 @@ class BeverageManager(BaseManager):
 
 class IngredientManager(BaseManager):
     model = Ingredient
-    serializer = IngredientSerializer  # esto l oapsa a ala tabla de ingredinet
+    serializer = IngredientSerializer  
 
     @classmethod
     def get_by_id_list(cls, ids: Sequence):
@@ -85,32 +85,23 @@ def get_beverages(new_order, beverages: List[Beverage]):
     return items
         
 
-
 class OrderManager(BaseManager): 
     model = Order
     serializer = OrderSerializer
-
-    # print(itemsList, 'itemslist', 'Beverage')
 
     @classmethod
     def create(cls, order_data: dict, ingredients: List[Ingredient], beverages: List[Beverage]):
         new_order = cls.model(**order_data)
 
-        ingredients = get_ingredients(new_order, ingredients)
-        beverages = get_beverages(new_order, beverages)
-
         cls.session.add(new_order)
         cls.session.flush()
         cls.session.refresh(new_order)
 
+        ingredients = get_ingredients(new_order, ingredients)
+        beverages = get_beverages(new_order, beverages)
+
         cls.session.add_all(ingredients)
         cls.session.add_all(beverages)
-        # cls.session.add_all((
-        #         OrderDetail(order_id=new_order._id,
-        #                     beverage_id=beverage._id,
-        #                     beverage_price=beverage.price,
-        #                     )  # aca hay que añadir la bebida y el precio
-        #     for beverage in beverages))
 
         cls.session.commit()
         return cls.serializer().dump(new_order)

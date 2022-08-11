@@ -28,14 +28,12 @@ class OrderController(BaseController):
         if not size:
             return 'Invalid size for Order', None
 
-        print('entramos')  # ACA HAY QUE TRABAJAR ACERCA DE LAS BEVERAGES,
-
         ingredient_ids = current_order.pop('ingredients', [])
-        beverage_ids = current_order.pop('beverages', []) #
+        beverage_ids = current_order.pop('beverages', []) 
         try:
 
             ingredients = IngredientManager.get_by_id_list(ingredient_ids)
-            beverages = BeverageManager.get_by_id_list(beverage_ids) #
+            beverages = BeverageManager.get_by_id_list(beverage_ids) 
 
             price = cls.calculate_order_price(size.get('price'), ingredients)
 

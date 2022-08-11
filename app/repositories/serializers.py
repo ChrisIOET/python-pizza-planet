@@ -29,15 +29,15 @@ class OrderDetailSerializer(ma.SQLAlchemyAutoSchema):
 
     ingredient = ma.Nested(IngredientSerializer)
     beverage = ma.Nested(BeverageSerializer)
-    
+
     class Meta:
         model = OrderDetail
         load_instance = True
         fields = (
             'ingredient_price',
             'ingredient',
-            'beverage_price', #!!!
-            'beverage',       #!!!
+            'beverage_price', 
+            'beverage',       
         )
 
 
