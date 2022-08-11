@@ -12,8 +12,8 @@ class OrderController(BaseController):
                        'client_address', 'client_phone', 'size_id')
 
     @staticmethod
-    def calculate_order_price(size_price: float, ingredients: list):
-        price = sum(ingredient.price for ingredient in ingredients)
+    def calculate_order_price(size_price: float, ingredients: list, beverages: list):
+        price = sum(ingredient.price for ingredient in ingredients) + sum(beverage.price for beverage in beverages) + size_price
         return round(price, 2)
 
     @classmethod
@@ -35,7 +35,7 @@ class OrderController(BaseController):
             ingredients = IngredientManager.get_by_id_list(ingredient_ids)
             beverages = BeverageManager.get_by_id_list(beverage_ids) 
 
-            price = cls.calculate_order_price(size.get('price'), ingredients)
+            price = cls.calculate_order_price(size.get('price'), ingredients, beverages)
 
             order_with_price = {**current_order, 'total_price': price}
             return cls.manager.create(order_with_price, ingredients, beverages), None
