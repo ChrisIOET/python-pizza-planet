@@ -55,36 +55,56 @@ class BeverageManager(BaseManager):
 
 class IngredientManager(BaseManager):
     model = Ingredient
-    serializer = IngredientSerializer ## esto l oapsa a ala tabla de ingredinet
+    serializer = IngredientSerializer  # esto l oapsa a ala tabla de ingredinet
 
     @classmethod
     def get_by_id_list(cls, ids: Sequence):
         return cls.session.query(cls.model).filter(cls.model._id.in_(set(ids))).all() or []
 
 
-class OrderManager(BaseManager):
+def get_ingredients(new_order, ingredients: List[Ingredient]):
+    items: List[OrderDetail] = []
+    for ingredient in ingredients:
+        order_detail = OrderDetail(
+            order_id=new_order._id,
+            ingredient_id=ingredient._id,
+            ingredient_price=ingredient.price,
+        )
+        items.append(order_detail)
+    return items
+
+def get_beverages(new_order, beverages: List[Beverage]):
+    items: List[OrderDetail] = []
+    for beverage in beverages:
+        order_detail = OrderDetail(
+            order_id=new_order._id,
+            beverage_id=beverage._id,
+            beverage_price=beverage.price,
+        )
+        items.append(order_detail)
+    return items
+        
+
+
+class OrderManager(BaseManager): 
     model = Order
     serializer = OrderSerializer
 
-    itemsList = List[Ingredient]
     # print(itemsList, 'itemslist', 'Beverage')
-    # beverages: List[Beverage]
 
     @classmethod
-    def create(cls, order_data: dict, ingredients: List[Ingredient]):
+    def create(cls, order_data: dict, ingredients: List[Ingredient], beverages: List[Beverage]):
         new_order = cls.model(**order_data)
+
+        ingredients = get_ingredients(new_order, ingredients)
+        beverages = get_beverages(new_order, beverages)
+
         cls.session.add(new_order)
         cls.session.flush()
         cls.session.refresh(new_order)
-        cls.session.add_all((
-            OrderDetail(order_id=new_order._id,
-                            ingredient_id=ingredient._id,
-                            ingredient_price=ingredient.price,
-                            # beverage_id=ingredient._id,
-                            # beverage_price=ingredient.price,
 
-                            )  # aca hay que añadir la bebida y el precio
-            for ingredient in ingredients))
+        cls.session.add_all(ingredients)
+        cls.session.add_all(beverages)
         # cls.session.add_all((
         #         OrderDetail(order_id=new_order._id,
         #                     beverage_id=beverage._id,
