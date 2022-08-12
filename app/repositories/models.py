@@ -48,5 +48,6 @@ class OrderDetail(db.Model):
     ingredient = db.relationship('Ingredient', backref=db.backref('ingredient'))
 
 
+
     
 
