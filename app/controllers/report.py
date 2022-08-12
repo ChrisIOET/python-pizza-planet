@@ -1,0 +1,41 @@
+from ..repositories.managers import IngredientManager, OrderDetailManager, OrderManager
+from .base import BaseController
+import datetime 
+
+""" 
+    - Which is the most requested ingredient
+    - Which is the month with more revenue
+    - We want to reward our best customers, so we would like to know who are the top 3 customers (those who buy more).
+    - You can choose the way to show the report in the user interface
+"""
+
+
+class ReportController(BaseController):
+
+    @classmethod
+    def get_report(cls):
+        orders = OrderManager.get_all()
+        order_details = OrderDetailManager.get_all()
+        ingredient_name = IngredientManager.get_all()
+        all_ingredients_list = [orderDetail["ingredient"]['_id']
+                                     for orderDetail in order_details]
+        most_request_ingredient = max(set(all_ingredients_list), key=all_ingredients_list.count)
+        most_request_ingredient_name = [ingredient["name"] for ingredient in ingredient_name if ingredient["_id"] == most_request_ingredient][0]
+        all_months_dict = {}
+        for order in orders:
+            all_months_dict[datetime.datetime.strptime(order["date"], '%Y-%m-%dT%H:%M:%S').month] = float("{:.2f}".format(round(all_months_dict.get(datetime.datetime.strptime(order["date"], '%Y-%m-%dT%H:%M:%S').month, 0) + order['total_price'],2)))
+
+        max_month_revenue = max(all_months_dict, key=all_months_dict.get)
+        max_revenue = max(all_months_dict.values())
+
+        all_clients_dict = {}
+        for order in orders:
+            
+            all_clients_dict[f"id:{order['client_dni']} name:{order['client_name']}"] = float("{:.2f}".format(round(all_clients_dict.get(f"id:{order['client_dni']} name:{order['client_name']}", 0) + order['total_price'], 2)))
+
+        top3_clients = sorted(all_clients_dict, key=all_clients_dict.get, reverse=True)[:3]
+        top3_clients_values = sorted(all_clients_dict.values(), reverse=True)[:3]
+
+        reports = {'most_requested_ingredient': f'id:{most_request_ingredient} name:{most_request_ingredient_name}', 'most_revenue_month': max_month_revenue, 'max_revenue': "{:.2f}".format(max_revenue), 'top_3_customers': top3_clients, 'top_3_customers_values': list(map(lambda x: "{:.2f}".format(x), top3_clients_values)) }
+
+        return reports, None

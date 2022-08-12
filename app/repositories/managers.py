@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Sequence
 from sqlalchemy.sql import text, column
 
 from .models import Beverage, Ingredient, Order, OrderDetail, Size, db
-from .serializers import (BeverageSerializer, IngredientSerializer, OrderSerializer,
+from .serializers import (BeverageSerializer, IngredientSerializer, OrderDetailSerializer, OrderSerializer,
                           SizeSerializer, ma)
 
 
@@ -42,7 +42,6 @@ class BaseManager:
 class SizeManager(BaseManager):
     model = Size
     serializer = SizeSerializer
-
 
 class BeverageManager(BaseManager):
     model = Beverage
@@ -107,12 +106,58 @@ class OrderManager(BaseManager):
         return cls.serializer().dump(new_order)
 
     @classmethod
+    def get_all_orders(cls):
+        return cls.session.query(cls.model).all() or []
+
+    @classmethod
     def update(cls):
         raise NotImplementedError(f'Method not suported for {cls.__name__}')
 
+class OrderDetailManager(BaseManager):
+    model = OrderDetail
+    serializer = OrderDetailSerializer
+
+    @classmethod
+    def get_all_orders_details(cls):
+        return cls.session.query(cls.model).all() or []
+
+    @classmethod
+    def get_by_id_list(cls, ids: Sequence):
+        return cls.session.query(cls.model).filter(cls.model._id.in_(set(ids))).all() or []
+
+    @classmethod
+    def get_by_order_id(cls, order_id: Any):
+        return cls.session.query(cls.model).filter(cls.model.order_id == order_id).all() or []
+
+    @classmethod
+    def get_by_ingredient_id(cls, ingredient_id: Any):
+        return cls.session.query(cls.model).filter(cls.model.ingredient_id == ingredient_id).all() or []
+
+    @classmethod
+    def get_by_beverage_id(cls, beverage_id: Any):
+        return cls.session.query(cls.model).filter(cls.model.beverage_id == beverage_id).all() or []
+
+    @classmethod
+    def get_by_order_id_and_ingredient_id(cls, order_id: Any, ingredient_id: Any):
+        return cls.session.query(cls.model).filter(cls.model.order_id == order_id).filter(cls.model.ingredient_id == ingredient_id).all() or []
+
+    @classmethod
+    def get_by_order_id_and_beverage_id(cls, order_id: Any, beverage_id: Any):
+        return cls.session.query(cls.model).filter(cls.model.order_id == order_id).filter(cls.model.beverage_id == beverage_id).all() or []
+
+    @classmethod
+    def get_by_ingredient_id_and_beverage_id(cls, ingredient_id: Any, beverage_id: Any):
+        return cls.session.query()
 
 class IndexManager(BaseManager):
 
     @classmethod
     def test_connection(cls):
         cls.session.query(column('1')).from_statement(text('SELECT 1')).all()
+
+class ReportManager(BaseManager):
+
+    @classmethod
+    def get_report(cls):
+        cls.session.query()
+

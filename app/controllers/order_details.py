@@ -1,20 +1,15 @@
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..common.utils import check_required_keys
-from ..repositories.managers import (BeverageManager, IngredientManager, OrderManager,
+from ..repositories.managers import (BeverageManager, IngredientManager, OrderDetailManager, 
                                      SizeManager)
 from .base import BaseController
 
 
-class OrderController(BaseController):
-    manager = OrderManager
-    __required_info = ('client_name', 'client_dni',
-                       'client_address', 'client_phone', 'size_id')
-
-    @staticmethod
-    def calculate_order_price(size_price: float, ingredients: list, beverages: list):
-        price = sum(ingredient.price for ingredient in ingredients) + sum(beverage.price for beverage in beverages) + size_price
-        return round(price, 2)
+class OrderDetailsController(BaseController):
+    manager = OrderDetailManager
+    __required_info = ('order_id', 'ingredient_id', 'ingrendient_price', 'beverage_id', 'beverage_price')
+    
 
     @classmethod
     def create(cls, order: dict):

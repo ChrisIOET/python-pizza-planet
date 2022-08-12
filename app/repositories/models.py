@@ -32,7 +32,6 @@ class Size(db.Model):
     name = db.Column(db.String(80), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-
 class OrderDetail(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order._id'))
@@ -46,8 +45,6 @@ class OrderDetail(db.Model):
 
     beverage = db.relationship('Beverage', backref=db.backref('beverage'))
     ingredient = db.relationship('Ingredient', backref=db.backref('ingredient'))
-
-
 
     
 

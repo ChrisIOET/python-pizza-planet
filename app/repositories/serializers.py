@@ -40,7 +40,6 @@ class OrderDetailSerializer(ma.SQLAlchemyAutoSchema):
             'beverage',       
         )
 
-
 class OrderSerializer(ma.SQLAlchemyAutoSchema):
     size = ma.Nested(SizeSerializer)
     detail = ma.Nested(OrderDetailSerializer, many=True)
