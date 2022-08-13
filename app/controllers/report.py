@@ -2,14 +2,6 @@ from ..repositories.managers import IngredientManager, OrderDetailManager, Order
 from .base import BaseController
 import datetime 
 
-""" 
-    - Which is the most requested ingredient
-    - Which is the month with more revenue
-    - We want to reward our best customers, so we would like to know who are the top 3 customers (those who buy more).
-    - You can choose the way to show the report in the user interface
-"""
-
-
 class ReportController(BaseController):
 
     @classmethod
