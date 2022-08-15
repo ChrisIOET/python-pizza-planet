@@ -1,10 +1,7 @@
 import os
 import random
 import sqlalchemy as db
-from alembic import op
 from datetime import date
-from sqlalchemy.sql import table, column
-from sqlalchemy import String, Integer, Date
 from sqlalchemy.orm import sessionmaker
 
 from app.repositories.models import Ingredient, Order, OrderDetail, Size, Beverage
@@ -12,6 +9,9 @@ from app.repositories.models import Ingredient, Order, OrderDetail, Size, Bevera
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
+engine = db.create_engine(
+        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
+session = sessionmaker(bind=engine)()
 
 def random_date():
     year = 2022
@@ -55,74 +55,50 @@ def beverage_random_generator():
 
 
 def beverages_table_populator():
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
     beverages = beverage_random_generator()
     for i in range(1, len(beverages) + 1):
-        session.add(
-            Beverage(name=beverages[i - 1][0], price=beverages[i - 1][1]))
-
+        session.add(Beverage(name=beverages[i - 1][0], price=beverages[i - 1][1]))
     session.commit()
     session.close()
 
 
 def ingredients_table_populator():
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
+    
     ingredients = ingredients_random_generator()
     for i in range(1, len(ingredients) + 1):
         session.add(Ingredient(
             name=ingredients[i - 1][0], price=ingredients[i - 1][1]))
-
     session.commit()
     session.close()
 
 
 def sizes_table_populator():
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
     sizes = size_random_generator()
     for i in range(1, len(sizes) + 1):
         session.add(Size(name=sizes[i - 1][0], price=sizes[i - 1][1]))
-
     session.commit()
     session.close()
 
 
 def get_ingredients():
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
     ingredients = session.query(Ingredient).all()
     session.close()
     return ingredients
 
 
 def get_sizes():
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
     sizes = session.query(Size).all()
     session.close()
     return sizes
 
 
 def get_beverages():
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
     beverages = session.query(Beverage).all()
     session.close()
     return beverages
 
 
 def get_id(table, name, price):
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
     id = session.query(table._id).filter_by(name=name, price=price).first()
     session.close()
     return id[0]
@@ -146,10 +122,6 @@ def order_detail_generator():
 
 
 def order_detail_populator(order_id: int, order_details: list):
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
-
     for order_detail in order_details:
         session.add(OrderDetail(order_id=order_id,
                     ingredient_id=order_detail[0], ingredient_price=order_detail[1], beverage_id=order_detail[2], beverage_price=order_detail[3]))
@@ -159,9 +131,6 @@ def order_detail_populator(order_id: int, order_details: list):
 
 
 def order_table_populator():
-    engine = db.create_engine(
-        'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pizza.sqlite')))
-    session = sessionmaker(bind=engine)()
     client_list = random_customer_generator()
     sizes = get_sizes()
 
@@ -196,3 +165,4 @@ def seed():
     ingredients_table_populator()
     beverages_table_populator()
     order_table_populator()
+    print("Seeding done")

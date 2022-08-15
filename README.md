@@ -83,6 +83,12 @@ set FLASK_ENV=development
 python3 manage.py run
 ```
 
+- Run seed:
+     
+```bash
+python manage.py seed
+```
+
 ## Running the frontend
 
 - Clone git UI submodule
