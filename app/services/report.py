@@ -7,5 +7,5 @@ report = Blueprint('report', __name__)
 
 @report.route('/', methods=GET)
 def get_report():
-    controller = ReportController.get_report()
+    controller = ReportController.obtain_report()
     return BaseService.get_all(controller)

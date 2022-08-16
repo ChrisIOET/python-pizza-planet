@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, List, Optional, Sequence
 
 from sqlalchemy.sql import text, column
@@ -125,29 +126,6 @@ class OrderDetailManager(BaseManager):
     def get_by_id_list(cls, ids: Sequence):
         return cls.session.query(cls.model).filter(cls.model._id.in_(set(ids))).all() or []
 
-    @classmethod
-    def get_by_order_id(cls, order_id: Any):
-        return cls.session.query(cls.model).filter(cls.model.order_id == order_id).all() or []
-
-    @classmethod
-    def get_by_ingredient_id(cls, ingredient_id: Any):
-        return cls.session.query(cls.model).filter(cls.model.ingredient_id == ingredient_id).all() or []
-
-    @classmethod
-    def get_by_beverage_id(cls, beverage_id: Any):
-        return cls.session.query(cls.model).filter(cls.model.beverage_id == beverage_id).all() or []
-
-    @classmethod
-    def get_by_order_id_and_ingredient_id(cls, order_id: Any, ingredient_id: Any):
-        return cls.session.query(cls.model).filter(cls.model.order_id == order_id).filter(cls.model.ingredient_id == ingredient_id).all() or []
-
-    @classmethod
-    def get_by_order_id_and_beverage_id(cls, order_id: Any, beverage_id: Any):
-        return cls.session.query(cls.model).filter(cls.model.order_id == order_id).filter(cls.model.beverage_id == beverage_id).all() or []
-
-    @classmethod
-    def get_by_ingredient_id_and_beverage_id(cls, ingredient_id: Any, beverage_id: Any):
-        return cls.session.query()
 
 class IndexManager(BaseManager):
 
@@ -158,6 +136,73 @@ class IndexManager(BaseManager):
 class ReportManager(BaseManager):
 
     @classmethod
-    def get_report(cls):
-        cls.session.query()
+    def get_most_requested_ingredient(cls):
+        order_details = OrderDetailManager.get_all()
+        all_ingredients_list = [orderDetail["ingredient"]['_id']
+                                     for orderDetail in order_details]
+        most_request_ingredient = max(set(all_ingredients_list), key=all_ingredients_list.count, default=0)    
 
+        return f'id:{most_request_ingredient}'
+
+    def get_most_ingredient_name_requested():
+        ingredient_name = IngredientManager.get_all()
+        most_request_ingredient = ReportManager.get_most_requested_ingredient()
+        most_request_ingredient_name = [ingredient["name"] for ingredient in ingredient_name if ingredient["_id"]] 
+        return most_request_ingredient_name
+
+    @classmethod
+    def get_all_months_dict(cls):
+        orders = OrderManager.get_all()
+        all_months_dict = {}
+        for order in orders:
+            get_selected_month = datetime.datetime.strptime(order["date"], '%Y-%m-%dT%H:%M:%S').month
+            all_months_dict[get_selected_month] = float("{:.2f}".format(round(all_months_dict.get(get_selected_month, 0) + order['total_price'],2)))
+        return all_months_dict
+            
+    @classmethod
+    def get_max_month_revenue_in_orders(cls):
+        all_months_dict = cls.get_all_months_dict()
+        max_month_revenue = max(all_months_dict, key=all_months_dict.get, default=0)
+
+        return max_month_revenue
+
+    @classmethod
+    def get_max_revenue_in_orders(cls):
+        all_months_dict = cls.get_all_months_dict()
+        max_revenue = max(all_months_dict.values(), default=0)
+
+        return "{:.2f}".format(max_revenue)
+    
+    @classmethod
+    def get_all_customers_dict(cls):
+        orders = OrderManager.get_all()
+        all_customers_dict = {}
+        for order in orders:
+            all_customers_dict[f"id:{order['client_dni']} name:{order['client_name']}"] = float("{:.2f}".format(round(all_customers_dict.get(f"id:{order['client_dni']} name:{order['client_name']}", 0) + order['total_price'], 2)))
+
+        return all_customers_dict
+    
+    @classmethod
+    def get_top3_customers(cls):
+        all_customers_dict = cls.get_all_customers_dict()
+        top3_customers = sorted(all_customers_dict, key=all_customers_dict.get, reverse=True)[:3]
+    
+        return top3_customers
+
+    @classmethod
+    def get_top3_customers_values(cls):
+        all_customers_dict = cls.get_all_customers_dict()
+        top3_customers_values = sorted(all_customers_dict.values(), reverse=True)[:3]
+
+        return list(map(lambda x: "{:.2f}".format(x), top3_customers_values))
+    
+    @classmethod
+    def obtain_all_data_from_customers(cls):
+        return {
+            "most_requested_ingredient": cls.get_most_requested_ingredient(),
+            "name_ingredient": cls.get_most_ingredient_name_requested(),
+            "most_revenue_month": cls.get_max_month_revenue_in_orders(),
+            "max_revenue": cls.get_max_revenue_in_orders(),
+            "top_3_customers": cls.get_top3_customers(),
+            "top_3_customers_values": cls.get_top3_customers_values()
+        }
