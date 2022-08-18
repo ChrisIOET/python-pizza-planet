@@ -39,12 +39,8 @@ class OrderDetail(db.Model):
     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient._id'), nullable=True)
     ingredient_price = db.Column(db.Float, nullable=True)
 
-    #beverage
     beverage_id = db.Column(db.Integer, db.ForeignKey('beverage._id'), nullable=True)
     beverage_price = db.Column(db.Float, nullable=True)
 
     beverage = db.relationship('Beverage', backref=db.backref('beverage'))
     ingredient = db.relationship('Ingredient', backref=db.backref('ingredient'))
-
-    
-

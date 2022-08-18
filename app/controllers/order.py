@@ -30,8 +30,8 @@ class OrderController(BaseController):
 
         ingredient_ids = current_order.pop('ingredients', [])
         beverage_ids = current_order.pop('beverages', []) 
-        try:
 
+        try:
             ingredients = IngredientManager.get_by_id_list(ingredient_ids)
             beverages = BeverageManager.get_by_id_list(beverage_ids) 
 

@@ -146,8 +146,8 @@ class ReportManager(BaseManager):
 
     def get_most_ingredient_name_requested():
         ingredient_name = IngredientManager.get_all()
-        most_request_ingredient = ReportManager.get_most_requested_ingredient()
-        most_request_ingredient_name = [ingredient["name"] for ingredient in ingredient_name if ingredient["_id"]] 
+        most_request_ingredient = ReportManager.get_most_requested_ingredient()       
+        most_request_ingredient_name = [ingredient["name"] for ingredient in ingredient_name if ingredient["_id"] == len(most_request_ingredient)][0] 
         return most_request_ingredient_name
 
     @classmethod
@@ -199,8 +199,7 @@ class ReportManager(BaseManager):
     @classmethod
     def obtain_all_data_from_customers(cls):
         return {
-            "most_requested_ingredient": cls.get_most_requested_ingredient(),
-            "name_ingredient": cls.get_most_ingredient_name_requested(),
+            "most_requested_ingredient": cls.get_most_ingredient_name_requested(), 
             "most_revenue_month": cls.get_max_month_revenue_in_orders(),
             "max_revenue": cls.get_max_revenue_in_orders(),
             "top_3_customers": cls.get_top3_customers(),

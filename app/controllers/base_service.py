@@ -1,11 +1,7 @@
 from flask import jsonify
 
 class BaseService:
-     
-     @staticmethod
-     def get_by_id(id: int):
-            return None, None
-     
+         
      @staticmethod
      def get_all(controller: list):
           controller, error = controller
