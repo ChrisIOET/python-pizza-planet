@@ -1,7 +1,7 @@
 from app.common.http_methods import GET, POST
 from flask import Blueprint, request
 
-from app.controllers.base_service import BaseService
+from app.services.base_service import BaseService
 
 from ..controllers import OrderController
 

@@ -1,8 +1,8 @@
 import os
 from random import randint, uniform
 import sqlalchemy as db
-from datetime import date
 from sqlalchemy.orm import sessionmaker
+from datetime import date
 
 from app.repositories.models import (
     Ingredient,
@@ -98,6 +98,10 @@ def random_customer_generator():
     return client_list
 
 
+def generate_random_number():
+    return float("{:.2f}".format(round(uniform(1, 9), 2)))
+
+
 def ingredients_random_generator():
     ingredients = [
         "pepperonii",
@@ -167,8 +171,11 @@ def ingredients_table_populator():
 
 def sizes_table_populator():
     sizes = size_random_generator()
-    for i in range(1, len(sizes) + 1):
-        session.add(Size(name=sizes[i - 1][0], price=sizes[i - 1][1]))
+    for size in sizes:
+        session.add(Size(
+            name=size["size"],
+            price=size["price"]
+        ))
     session.commit()
     session.close()
 
@@ -198,7 +205,6 @@ def get_id(table, name, price):
 
 
 def order_detail_generator():
-
     ingredients = get_ingredients()
     beverages = get_beverages()
     order_detail = []
@@ -280,4 +286,3 @@ def seed():
     ingredients_table_populator()
     beverages_table_populator()
     order_table_populator()
-    print("Seeding done")

@@ -2,6 +2,9 @@ import datetime
 from typing import Any, List, Optional, Sequence
 
 from sqlalchemy.sql import text, column
+from sqlalchemy import func
+
+from app.common.utils import format_currency_with_double_decimals
 
 from .models import Beverage, Ingredient, Order, OrderDetail, Size, db
 from .serializers import (
@@ -109,10 +112,7 @@ class OrderManager(BaseManager):
 
     @classmethod
     def create(
-        cls,
-        order_data: dict,
-        ingredients: List[Ingredient],
-        beverages: List[Beverage],
+        cls, order_data: dict, ingredients: List[Ingredient], beverages: List[Beverage]
     ):
         new_order = cls.model(**order_data)
 
@@ -163,114 +163,74 @@ class IndexManager(BaseManager):
 
 
 class ReportManager(BaseManager):
+
+    session = db.session
+
     @classmethod
     def get_most_requested_ingredient(cls):
-        order_details = OrderDetailManager.get_all()
-        all_ingredients_list = [
-            orderDetail["ingredient"]["_id"] for orderDetail in order_details
-        ]
-        most_request_ingredient = max(
-            set(all_ingredients_list),
-            key=all_ingredients_list.count,
-            default=0,
+        most_request_ingredient = (
+            cls.session.query(Ingredient, func.count(OrderDetail.ingredient_id))
+            .join(OrderDetail)
+            .group_by(Ingredient)
+            .order_by(func.count(OrderDetail.ingredient_id).desc())
+            .first()
+        )
+        return f"{most_request_ingredient[0].name}, {most_request_ingredient[1]} times"
+
+    @classmethod
+    def get_most_revenue_month(cls):
+        max_month_revenue = (
+            cls.session.query(Order.date)
+            .group_by(Order.date)
+            .order_by(func.sum(Order.total_price).desc())
+            .first()
+        )
+        month = max_month_revenue[0].month
+        return f"{month}"
+
+    @classmethod
+    def get_max_revenue(cls):
+        max_revenue = (
+            cls.session.query(func.sum(Order.total_price))
+            .group_by(Order.date)
+            .order_by(func.sum(Order.total_price).desc())
+            .first()
+        )
+        return max_revenue[0]
+
+    @classmethod
+    def get_top3_customers_data(cls):
+        def get_customer_dict(customer):
+            return f" dni: {customer[0]}, name: {customer[1]}"
+
+        all_customers = (
+            cls.session.query(Order.client_dni, Order.client_name)
+            .group_by(Order.client_dni)
+            .order_by(func.sum(Order.total_price).desc())
+            .limit(3)
+            .all()
         )
 
-        return f"id:{most_request_ingredient}"
-
-    def get_most_ingredient_name_requested():
-        ingredient_name = IngredientManager.get_all()
-        most_request_ingredient = ReportManager.get_most_requested_ingredient()
-        most_request_ingredient_name = [
-            ingredient["name"]
-            for ingredient in ingredient_name
-            if ingredient["_id"] == len(most_request_ingredient)
-        ][0]
-        return most_request_ingredient_name
-
-    @classmethod
-    def get_all_months_dict(cls):
-        orders = OrderManager.get_all()
-        all_months_dict = {}
-        for order in orders:
-            get_selected_month = datetime.datetime.strptime(
-                order["date"], "%Y-%m-%dT%H:%M:%S"
-            ).month
-            all_months_dict[get_selected_month] = float(
-                "{:.2f}".format(
-                    round(
-                        all_months_dict.get(get_selected_month, 0)
-                        + order["total_price"],
-                        2,
-                    )
-                )
-            )
-        return all_months_dict
-
-    @classmethod
-    def get_max_month_revenue_in_orders(cls):
-        all_months_dict = cls.get_all_months_dict()
-        max_month_revenue = max(
-            all_months_dict, key=all_months_dict.get, default=0
-        )
-
-        return max_month_revenue
-
-    @classmethod
-    def get_max_revenue_in_orders(cls):
-        all_months_dict = cls.get_all_months_dict()
-        max_revenue = max(all_months_dict.values(), default=0)
-
-        return "{:.2f}".format(max_revenue)
-
-    @classmethod
-    def get_all_customers_dict(cls):
-        orders = OrderManager.get_all()
-        all_customers_dict = {}
-        for order in orders:
-            all_customers_dict[
-                f"id:{order['client_dni']} name:{order['client_name']}"
-            ] = float(
-                "{:.2f}".format(
-                    round(
-                        all_customers_dict.get(
-                            (f"id:{order['client_dni']}"
-                             f"name:{order['client_name']}"),
-                            0,
-                        )
-                        + order["total_price"],
-                        2,
-                    )
-                )
-            )
-
-        return all_customers_dict
-
-    @classmethod
-    def get_top3_customers(cls):
-        all_customers_dict = cls.get_all_customers_dict()
-        top3_customers = sorted(
-            all_customers_dict, key=all_customers_dict.get, reverse=True
-        )[:3]
-
-        return top3_customers
+        return [get_customer_dict(customer) for customer in all_customers]
 
     @classmethod
     def get_top3_customers_values(cls):
-        all_customers_dict = cls.get_all_customers_dict()
-        top3_customers_values = sorted(
-            all_customers_dict.values(), reverse=True
-        )[:3]
+        top_3_customers_value = (
+            cls.session.query(func.sum(Order.total_price))
+            .group_by(Order.client_dni)
+            .order_by(func.sum(Order.total_price).desc())
+            .limit(3)
+            .all()
+        )
 
-        return list(map(lambda x: "{:.2f}".format(x), top3_customers_values))
+        return [f"${customer[0]:.2f}" for customer in top_3_customers_value]
 
     @classmethod
     def obtain_all_data_from_customers(cls):
         return {
-            "most_requested_ingredient": (
-                cls.get_most_ingredient_name_requested()
-            ),
-            "most_revenue_month": cls.get_max_month_revenue_in_orders(),
-            "max_revenue": cls.get_max_revenue_in_orders(),
-            "top_3_customers": cls.get_top3_customers(),
+            "most_requested_ingredient": cls.get_most_requested_ingredient(),
+            "most_revenue_month": cls.get_most_revenue_month()[0],
+            "max_revenue": cls.get_max_revenue(),
+            "top_3_customers": cls.get_top3_customers_data(),
             "top_3_customers_values": cls.get_top3_customers_values(),
         }
