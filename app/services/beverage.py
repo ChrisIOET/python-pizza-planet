@@ -2,7 +2,7 @@ from app.common.http_methods import GET, POST, PUT
 from flask import Blueprint, jsonify, request
 
 from app.controllers.beverage import BeverageController
-from app.controllers.base_service import BaseService
+from app.services.base_service import BaseService
 
 beverage = Blueprint('beverage', __name__)
 

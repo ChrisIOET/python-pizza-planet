@@ -1,7 +1,7 @@
 from app.common.http_methods import GET, POST, PUT
 from flask import Blueprint, jsonify
 from app.controllers.report import ReportController
-from app.controllers.base_service import BaseService
+from app.services.base_service import BaseService
 
 report = Blueprint('report', __name__)
 
