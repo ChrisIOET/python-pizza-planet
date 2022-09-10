@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture
-def report_uri():
+def report_url():
     return '/report/'
