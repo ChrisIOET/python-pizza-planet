@@ -1,5 +1,5 @@
 from app.common.http_methods import GET, POST, PUT
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 
 from app.services.base_service import BaseService
 
@@ -24,6 +24,7 @@ def update_size():
 def get_size_by_id(_id: int):
     controller = SizeController.get_by_id(_id)
     return BaseService.get_id(controller)
+
 
 @size.route('/', methods=GET)
 def get_sizes():
