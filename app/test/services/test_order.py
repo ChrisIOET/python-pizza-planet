@@ -1,7 +1,5 @@
 import pytest
 
-from app.test.utils.functions import get_random_string, get_random_price
-
 
 def test_create_order(create_orders):
     for order in create_orders:
@@ -19,7 +17,9 @@ def test_create_order(create_orders):
 def test_get_orders_service(client, create_orders, order_uri):
     get_client = client.get(order_uri)
     pytest.assume(get_client.status.startswith('200'))
-    orders_returned = {get_client['_id']: get_client for get_client in get_client.json}
+    orders_returned = {
+        get_client['_id']: get_client for get_client in get_client.json
+    }
     for order in create_orders:
         pytest.assume(len(orders_returned) == len(create_orders))
         pytest.assume(order.json['_id'] in orders_returned)
@@ -35,5 +35,3 @@ def test_get_order_by_id_service(client, create_orders, order_uri):
     returned_order = response.json
     for param, value in current_order.items():
         pytest.assume(returned_order[param] == value)
-
-

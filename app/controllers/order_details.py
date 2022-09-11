@@ -1,15 +1,24 @@
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..common.utils import check_required_keys
-from ..repositories.managers import (BeverageManager, IngredientManager, OrderDetailManager, 
-                                     SizeManager)
+from ..repositories.managers import (
+    BeverageManager,
+    IngredientManager,
+    OrderDetailManager,
+    SizeManager,
+)
 from .base import BaseController
 
 
 class OrderDetailsController(BaseController):
     manager = OrderDetailManager
-    __required_info = ('order_id', 'ingredient_id', 'ingrendient_price', 'beverage_id', 'beverage_price')
-    
+    __required_info = (
+        'order_id',
+        'ingredient_id',
+        'ingrendient_price',
+        'beverage_id',
+        'beverage_price',
+    )
 
     @classmethod
     def create(cls, order: dict):
@@ -24,16 +33,20 @@ class OrderDetailsController(BaseController):
             return 'Invalid size for Order', None
 
         ingredient_ids = current_order.pop('ingredients', [])
-        beverage_ids = current_order.pop('beverages', []) 
+        beverage_ids = current_order.pop('beverages', [])
         try:
 
             ingredients = IngredientManager.get_by_id_list(ingredient_ids)
-            beverages = BeverageManager.get_by_id_list(beverage_ids) 
+            beverages = BeverageManager.get_by_id_list(beverage_ids)
 
-            price = cls.calculate_order_price(size.get('price'), ingredients, beverages)
+            price = cls.calculate_order_price(
+                size.get('price'), ingredients, beverages
+            )
 
             order_with_price = {**current_order, 'total_price': price}
-            return cls.manager.create(order_with_price, ingredients, beverages), None
+            return (
+                cls.manager.create(order_with_price, ingredients, beverages),
+                None,
+            )
         except (SQLAlchemyError, RuntimeError) as ex:
             return None, str(ex)
-

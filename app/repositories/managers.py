@@ -1,10 +1,8 @@
-import datetime
 from typing import Any, List, Optional, Sequence
 
 from sqlalchemy.sql import text, column
 from sqlalchemy import func
 
-from app.common.utils import format_currency_with_double_decimals
 
 from .models import Beverage, Ingredient, Order, OrderDetail, Size, db
 from .serializers import (
@@ -61,7 +59,10 @@ class BeverageManager(BaseManager):
     @classmethod
     def get_by_id_list(cls, ids: Sequence):
         return (
-            cls.session.query(cls.model).filter(cls.model._id.in_(set(ids))).all() or []
+            cls.session.query(cls.model)
+            .filter(cls.model._id.in_(set(ids)))
+            .all()
+            or []
         )
 
 
@@ -72,7 +73,10 @@ class IngredientManager(BaseManager):
     @classmethod
     def get_by_id_list(cls, ids: Sequence):
         return (
-            cls.session.query(cls.model).filter(cls.model._id.in_(set(ids))).all() or []
+            cls.session.query(cls.model)
+            .filter(cls.model._id.in_(set(ids)))
+            .all()
+            or []
         )
 
 
@@ -106,7 +110,9 @@ class OrderManager(BaseManager):
 
     @classmethod
     def create(
-        cls, order_data: dict, ingredients: List[Ingredient], beverages: List[Beverage]
+        cls, order_data: dict,
+        ingredients: List[Ingredient],
+        beverages: List[Beverage]
     ):
         new_order = cls.model(**order_data)
 
@@ -143,7 +149,10 @@ class OrderDetailManager(BaseManager):
     @classmethod
     def get_by_id_list(cls, ids: Sequence):
         return (
-            cls.session.query(cls.model).filter(cls.model._id.in_(set(ids))).all() or []
+            cls.session.query(cls.model)
+            .filter(cls.model._id.in_(set(ids)))
+            .all()
+            or []
         )
 
 
@@ -160,13 +169,15 @@ class ReportManager(BaseManager):
     @classmethod
     def get_most_requested_ingredient(cls):
         most_request_ingredient = (
-            cls.session.query(Ingredient, func.count(OrderDetail.ingredient_id))
+            cls.session.query(Ingredient,
+                              func.count(OrderDetail.ingredient_id))
             .join(OrderDetail)
             .group_by(Ingredient)
             .order_by(func.count(OrderDetail.ingredient_id).desc())
             .first()
         )
-        return f"{most_request_ingredient[0].name}, {most_request_ingredient[1]} times"
+        return (f"{most_request_ingredient[0].name}, "
+                f"{most_request_ingredient[1]} times")
 
     @classmethod
     def get_most_revenue_month(cls):
