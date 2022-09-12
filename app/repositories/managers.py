@@ -228,7 +228,7 @@ class ReportManager(BaseManager):
         return [f"${customer[0]:.2f}" for customer in top_3_customers_value]
 
     @classmethod
-    def obtain_all_data_from_customers(cls):
+    def obtain_report_data(cls):
         return {
             "most_requested_ingredient": cls.get_most_requested_ingredient(),
             "most_revenue_month": cls.get_most_revenue_month()[0],

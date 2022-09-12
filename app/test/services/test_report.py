@@ -1,16 +1,12 @@
 import pytest
 
-""" Doen't work for the final .48754 numbers... """
-
 
 def test_get_report_service_with_orders(client, report_url, create_orders):
     response = client.get(report_url)
     pytest.assume(response.status_code == 200)
-    pytest.assume(response.json['customers'] is not None)
-    pytest.assume(response.json['ingredient'] is not None)
-    pytest.assume(response.json['month'] is not None)
-
-
-def test_get_report_service_without_orders(client, report_url):
-    response = client.get(report_url)
-    pytest.assume(response.status.startswith('200'))
+    pytest.assume(response.json['max_revenue'] is not None)
+    pytest.assume(response.json['most_requested_ingredient'] is not None)
+    pytest.assume(response.json['most_revenue_month'] is not None)
+    pytest.assume(response.json['top_3_customers'] is not None)
+    pytest.assume(response.json['top_3_customers_values'] is not None)
+    pytest.assume(len(response.json) == 5)
