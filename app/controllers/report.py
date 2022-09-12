@@ -1,4 +1,7 @@
 from typing import Any
+
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.repositories.managers import ReportManager
 from .base import BaseController
 
@@ -8,4 +11,7 @@ class ReportController(BaseController):
 
     @classmethod
     def obtain_report(cls) -> dict[str, Any]:
-        return ReportManager.obtain_all_data_from_customers(), None
+        try:
+            return ReportManager.obtain_report_data(), None
+        except (SQLAlchemyError, RuntimeError) as ex:
+            return None, str(ex)
