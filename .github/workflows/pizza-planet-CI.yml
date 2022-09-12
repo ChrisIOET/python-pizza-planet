@@ -29,5 +29,5 @@ jobs:
 
       - name: show coverage
         run: |
-          coverage run -m pytest app/test.
+          coverage run -m pytest app/test
         
