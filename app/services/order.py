@@ -1,26 +1,24 @@
 from app.common.http_methods import GET, POST
-from flask import Blueprint, request
+from flask import Blueprint
 
-from app.services.base_service import BaseService
-
-from ..controllers import OrderController
+from app.services.index import base_service
+from app.controllers.index_controller import IndexController
 
 order = Blueprint('order', __name__)
+
+controller = IndexController.get_selected_controller('4')
 
 
 @order.route('/', methods=POST)
 def create_order():
-    controller = OrderController.create(request.json)
-    return BaseService.create(controller)
+    return base_service.create(controller)
 
 
 @order.route('/id/<_id>', methods=GET)
 def get_order_by_id(_id: int):
-    controller = OrderController.get_by_id(_id)
-    return BaseService.get_id(controller)
+    return base_service.get_id(controller)
 
 
 @order.route('/', methods=GET)
 def get_orders():
-    controller = OrderController.get_all()
-    return BaseService.get_all(controller)
+    return base_service.get_all(controller)
