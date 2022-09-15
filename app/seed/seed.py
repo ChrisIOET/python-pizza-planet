@@ -126,10 +126,10 @@ def ingredients_random_generator():
 
 def size_random_generator():
     sizes = ["small", "medium", "large", "xl", "xxl"]
-    return [
-        [sizes[i], float("{:.2f}".format(round(uniform(1, 9), 2)))]
-        for i in range(0, len(sizes))
-    ]
+    return [{
+        "size": size,
+        "price": generate_random_number(),
+    } for size in sizes]
 
 
 def beverage_random_generator():
