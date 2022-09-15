@@ -1,7 +1,11 @@
 from app.common.http_methods import GET
 from flask import Blueprint, jsonify
+from app.services.base_service import BaseService
 
 from ..controllers import IndexController
+
+base_service = BaseService()
+
 
 index = Blueprint('index', __name__)
 

@@ -1,32 +1,29 @@
 from app.common.http_methods import GET, POST, PUT
-from flask import Blueprint, request
+from flask import Blueprint
 
-from app.services.base_service import BaseService
-
-from ..controllers import SizeController
+from app.services.index import base_service
+from app.controllers.index_controller import IndexController
 
 size = Blueprint('size', __name__)
+
+controller = IndexController.get_selected_controller('3')
 
 
 @size.route('/', methods=POST)
 def create_size():
-    controller = SizeController.create(request.json)
-    return BaseService.create(controller)
+    return base_service.create(controller)
 
 
 @size.route('/', methods=PUT)
 def update_size():
-    controller = SizeController.update(request.json)
-    return BaseService.update(controller)
+    return base_service.update(controller)
 
 
 @size.route('/id/<_id>', methods=GET)
 def get_size_by_id(_id: int):
-    controller = SizeController.get_by_id(_id)
-    return BaseService.get_id(controller)
+    return base_service.get_id(controller)
 
 
 @size.route('/', methods=GET)
 def get_sizes():
-    controller = SizeController.get_all()
-    return BaseService.get_all(controller)
+    return base_service.get_all(controller)

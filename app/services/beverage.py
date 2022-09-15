@@ -1,33 +1,29 @@
 from app.common.http_methods import GET, POST, PUT
-from flask import Blueprint, jsonify, request
+from flask import Blueprint
 
-from app.controllers.beverage import BeverageController
-from app.services.base_service import BaseService
+from app.services.index import base_service
+from app.controllers.index_controller import IndexController
 
 beverage = Blueprint('beverage', __name__)
+
+controller = IndexController.get_selected_controller('1')
 
 
 @beverage.route('/', methods=GET)
 def get_beverages():
-    controller = BeverageController.get_all()
-    return BaseService.get_all(controller)
+    return base_service.get_all(controller)
 
 
 @beverage.route('/', methods=POST)
 def create_beverage():
-    controller = BeverageController.create(request.json)
-    return BaseService.create(controller)
+    return base_service.create(controller)
 
 
 @beverage.route('/', methods=PUT)
 def update_beverage():
-    beverage, error = BeverageController.update(request.json)
-    response = beverage if not error else {'error': error}
-    status_code = 200 if not error else 400
-    return jsonify(response), status_code
+    return base_service.update(controller)
 
 
 @beverage.route('/id/<_id>', methods=GET)
 def get_beverage_by_id(_id: int):
-    controller = BeverageController.get_by_id(_id)
-    return BaseService.get_id(controller)
+    return base_service.get_id(controller)
