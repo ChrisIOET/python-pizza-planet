@@ -21,7 +21,7 @@ def update_size():
 
 @size.route('/id/<_id>', methods=GET)
 def get_size_by_id(_id: int):
-    return base_service.get_id(controller)
+    return base_service.get_by_id(controller, _id)
 
 
 @size.route('/', methods=GET)

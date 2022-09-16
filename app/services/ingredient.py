@@ -26,4 +26,4 @@ def update_ingredient():
 
 @ingredient.route('/id/<_id>', methods=GET)
 def get_ingredient_by_id(_id: int):
-    return base_service.get_id(controller)
+    return base_service.get_by_id(controller, _id)

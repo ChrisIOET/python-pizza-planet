@@ -26,7 +26,7 @@ class BaseService:
         return jsonify(response), status_code
 
     @classmethod
-    def get_by_id(cls, _id, controller) -> tuple[str, Number]:
+    def get_by_id(cls, controller, _id) -> tuple[str, Number]:
         controller, error = controller.get_by_id(_id)
         response = controller if not error else {'error': error}
         status_code = 200 if controller else 404 if not error else 400
