@@ -16,7 +16,7 @@ def create_order():
 
 @order.route('/id/<_id>', methods=GET)
 def get_order_by_id(_id: int):
-    return base_service.get_id(controller)
+    return base_service.get_by_id(controller, _id)
 
 
 @order.route('/', methods=GET)

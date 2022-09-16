@@ -26,4 +26,4 @@ def update_beverage():
 
 @beverage.route('/id/<_id>', methods=GET)
 def get_beverage_by_id(_id: int):
-    return base_service.get_id(controller)
+    return base_service.get_by_id(controller, _id)
