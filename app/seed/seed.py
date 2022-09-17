@@ -118,7 +118,7 @@ def ingredients_random_generator():
     return [
         [
             ingredients[i],
-            float("{:.2f}".format(round(uniform(1, 9), 2))),
+            generate_random_number(),
         ]
         for i in range(0, len(ingredients))
     ]
@@ -143,7 +143,7 @@ def beverage_random_generator():
         "monster",
     ]
     return [
-        [beverages[i], float("{:.2f}".format(round(uniform(1, 9), 2)))]
+        [beverages[i], generate_random_number()]
         for i in range(0, len(beverages))
     ]
 
