@@ -42,14 +42,19 @@ def test_get_by_id(app, beverage: dict):
 
 
 def test_get_all(app, beverages: list):
+    created_beverages = []
+    for beverage in beverages:
+        created_beverage, _ = BeverageController.create(beverage)
+        created_beverages.append(created_beverage)
+
     beverages_from_db, error = BeverageController.get_all()
     searchable_beverages = {
-        beverage['name']: beverage for beverage in beverages
+        beverage['_id']: beverage for beverage in beverages_from_db
     }
     pytest.assume(error is None)
-    for beverage in beverages:
-        pytest.assume(beverage['name'] in searchable_beverages)
+    for beverage in created_beverages:
+        pytest.assume(beverage['_id'] in searchable_beverages)
         for param, value in beverage.items():
             pytest.assume(
-                searchable_beverages[beverage['name']][param] == value
+                searchable_beverages[beverage['_id']][param] == value
             )

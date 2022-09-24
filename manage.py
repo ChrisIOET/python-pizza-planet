@@ -1,3 +1,4 @@
+import os
 import sys
 import pytest
 from flask.cli import FlaskGroup
@@ -16,6 +17,9 @@ manager = FlaskGroup(flask_app)
 migrate = Migrate()
 migrate.init_app(flask_app, db)
 
+@manager.command('formatter', with_appcontext=False)
+def code_formatter():
+    os.system("black app/ manage.py --skip-string-normalization --line-length 79")
 
 @manager.command('test', with_appcontext=False)
 def test():
