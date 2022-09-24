@@ -80,33 +80,33 @@ class IngredientManager(BaseManager):
         )
 
 
-def get_ingredients(new_order, ingredients: List[Ingredient]):
-    items: List[OrderDetail] = []
-    for ingredient in ingredients:
-        order_detail = OrderDetail(
-            order_id=new_order._id,
-            ingredient_id=ingredient._id,
-            ingredient_price=ingredient.price,
-        )
-        items.append(order_detail)
-    return items
-
-
-def get_beverages(new_order, beverages: List[Beverage]):
-    items: List[OrderDetail] = []
-    for beverage in beverages:
-        order_detail = OrderDetail(
-            order_id=new_order._id,
-            beverage_id=beverage._id,
-            beverage_price=beverage.price,
-        )
-        items.append(order_detail)
-    return items
-
-
 class OrderManager(BaseManager):
     model = Order
     serializer = OrderSerializer
+
+    @classmethod
+    def get_ingredients(cls, new_order, ingredients: List[Ingredient]):
+        items: List[OrderDetail] = []
+        for ingredient in ingredients:
+            order_detail = OrderDetail(
+                order_id=new_order._id,
+                ingredient_id=ingredient._id,
+                ingredient_price=ingredient.price,
+            )
+            items.append(order_detail)
+        return items
+
+    @classmethod
+    def get_beverages(cls, new_order, beverages: List[Beverage]):
+        items: List[OrderDetail] = []
+        for beverage in beverages:
+            order_detail = OrderDetail(
+                order_id=new_order._id,
+                beverage_id=beverage._id,
+                beverage_price=beverage.price,
+            )
+            items.append(order_detail)
+        return items
 
     @classmethod
     def create(
@@ -120,8 +120,8 @@ class OrderManager(BaseManager):
         cls.session.flush()
         cls.session.refresh(new_order)
 
-        ingredients = get_ingredients(new_order, ingredients)
-        beverages = get_beverages(new_order, beverages)
+        ingredients = cls.get_ingredients(new_order, ingredients)
+        beverages = cls.get_beverages(new_order, beverages)
 
         cls.session.add_all(ingredients)
         cls.session.add_all(beverages)
