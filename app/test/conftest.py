@@ -15,13 +15,14 @@ from .fixtures.beverage import *
 from .fixtures.report import *
 from .fixtures.index import *
 
+
 @pytest.fixture
 def app():
 
     db_fd, dbpath = tempfile.mkstemp()
 
     class Config:
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(dbpath)
+        SQLALCHEMY_DATABASE_URI = "sqlite:///{}".format(dbpath)
         TESTING = True
         SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -46,12 +47,13 @@ def client(app):
     client = app.test_client()
     return client
 
+
 @pytest.fixture
 def client_without_connection():
     class Config:
         TESTING = True
-    
+
     client_without_connection = create_app(Config)
-    register_blueprints(client_without_connection) 
+    register_blueprints(client_without_connection)
     client_without_connection.app_context().push()
     return client_without_connection.test_client()

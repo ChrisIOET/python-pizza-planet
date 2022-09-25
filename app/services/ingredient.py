@@ -2,11 +2,11 @@ from app.common.http_methods import GET, POST, PUT
 from flask import Blueprint
 
 from app.services.index import base_service
-from app.controllers.index_controller import IndexController
+from app.controllers.index_factory_controller import IndexFactoryController
 
 ingredient = Blueprint('ingredient', __name__)
 
-controller = IndexController.get_selected_controller('2')
+controller = IndexFactoryController.get_selected_controller('2')
 
 
 @ingredient.route('/', methods=GET)
