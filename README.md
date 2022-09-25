@@ -118,3 +118,13 @@ ext install ritwickdey.LiveServer
 ```bash
 python3 manage.py test
 ```
+
+### run on production
+
+- Create postgres database
+
+```bash
+python manage.py run_docker
+```
+
+

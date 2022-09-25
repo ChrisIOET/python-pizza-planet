@@ -1,6 +1,10 @@
 import inspect
+import os
+from dotenv import load_dotenv
 
 from flask import Blueprint, Flask
+
+load_dotenv()
 
 
 def create_app(config_class: str):
@@ -42,4 +46,7 @@ def configure_app(config_class):
     return flask_app
 
 
-flask_app = configure_app("app.settings.Config")
+if os.environ.get("FLASK_ENV") == "development":
+    flask_app = configure_app("app.settings.DevelopmentConfig")
+else:
+    flask_app = configure_app("app.settings.ProductionConfig")

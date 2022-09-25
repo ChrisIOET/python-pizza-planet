@@ -3,7 +3,8 @@ from random import randint, uniform
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 from datetime import date
-
+from dotenv import load_dotenv
+from app.settings import ProductionConfig, DevelopmentConfig
 from app.repositories.models import (
     Ingredient,
     Order,
@@ -12,13 +13,17 @@ from app.repositories.models import (
     Beverage,
 )
 
+load_dotenv()
+
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 
-engine = db.create_engine(
-    "sqlite:///{}".format(os.path.join(BASE_DIR, "pizza.sqlite"))
-)
+database = (DevelopmentConfig.SQLALCHEMY_DATABASE_URI if
+            os.environ.get("FLASK_ENV") == "development"
+            else ProductionConfig.SQLALCHEMY_DATABASE_URI)
+
+engine = db.create_engine(database)
 session = sessionmaker(bind=engine)()
 
 
@@ -250,7 +255,6 @@ def order_table_populator():
         next_id = session.query(Order).count() + 1
 
         order_details = order_detail_generator()
-        order_detail_populator(next_id, order_details)
         order_details_sum = float(
             "{:.2f}".format(
                 round(
@@ -274,9 +278,9 @@ def order_table_populator():
             total_price=order_details_sum,
             size_id=get_id(Size, size.name, size.price),
         )
-
         session.add(order)
         session.commit()
+        order_detail_populator(next_id, order_details)
 
     session.close()
 
