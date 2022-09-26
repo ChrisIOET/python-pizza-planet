@@ -55,26 +55,34 @@ _For windows users:_
 pip3 install -r requirements.txt
 ```
 
+- copy the .env.example file and paste it in an .env file
+
+- Choose what sort of environment you want with reload feature.
+
+```bash
+a)	export FLASK_ENV="development"
+	or
+b)	export FLASK_ENV="production"
+```
+Note: if you are a windows user change "export" "set"
+
+
+run docker function 
+```bash
+	python manage.py run_docker
+```
+
+- If you want to initialize Database
+```bash
+docker run --name pgadmin-pizza -e PGADMIN_DEFAULT_EMAIL=user@domain.com -e PGADMIN_DEFAULT_PASSWORD=12345 -e PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True -e PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10 -p 5050:80 -d dpage/pgadmin4
+```
+
 - Start the database (Only needed for the first run):
 
 ```bash
 python manage.py db init
 python manage.py db migrate
 python manage.py db upgrade
-```
-
-- If you want to use the hot reload feature set FLASK_ENV before running the project:
-
-_For linux/MacOS users:_
-
-```bash
-export FLASK_ENV=development 
-```
-
-_For windows users:_
-
-```CMD
-set FLASK_ENV=development
 ```
 
 - Run the project with:
