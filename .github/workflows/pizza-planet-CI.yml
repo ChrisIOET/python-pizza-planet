@@ -10,6 +10,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env: 
+      DB_SERVER_DEVELOPMENT: ${{ secrets.DB_SERVER_DEVELOPMENT }}
+      PRODUCTION_DB_NAME: ${{ secrets.PRODUCTION_DB_NAME }}
+      PRODUCTION_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+      DB_SERVER_PRODUCTION: ${{ secrets.DB_SERVER_PRODUCTION }}
+      
     steps:
       - name: Install Pizza planet
         uses: actions/checkout@v3
