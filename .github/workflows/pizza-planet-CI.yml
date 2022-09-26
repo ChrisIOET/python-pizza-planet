@@ -25,9 +25,9 @@ jobs:
 
       - name: run flake8
         run : |
-          flake8 app/ manage.py 
+          flake8 app/ manage.py --exclude=app/test
 
       - name: show coverage
         run: |
-          coverage run -m pytest app/test
+          coverage run -m pytest app/test 
           coverage report -m

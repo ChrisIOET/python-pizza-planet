@@ -6,7 +6,7 @@ from typing import Any, Union
 def get_random_string() -> str:
     letters = list(string.ascii_lowercase)
     random.shuffle(letters)
-    return ''.join(letters[:10])
+    return "".join(letters[:10])
 
 
 def get_random_choice(choices: Union[tuple, list]) -> Any:
@@ -24,14 +24,16 @@ def shuffle_list(choices: list) -> list:
 
 
 def get_random_email() -> str:
-    return (f"{get_random_string()}@"
-            f"{get_random_choice(['hotmail.com', 'gmail.com', 'test.com'])}")
+    return (
+        f"{get_random_string()}@"
+        f"{get_random_choice(['hotmail.com', 'gmail.com', 'test.com'])}"
+    )
 
 
 def get_random_sequence(length: int = 10) -> str:
     digits = list(map(str, range(10)))
     sequence = [digits[random.randint(0, 9)] for _ in range(length)]
-    return ''.join(sequence)
+    return "".join(sequence)
 
 
 def get_random_phone() -> str:

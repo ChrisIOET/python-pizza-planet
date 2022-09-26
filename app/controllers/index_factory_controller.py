@@ -4,7 +4,7 @@ from .size import SizeController
 from .order import OrderController
 
 
-class IndexController(object):
+class IndexFactoryController(object):
 
     @staticmethod
     def get_selected_controller(controller_type):
